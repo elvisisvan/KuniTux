@@ -1,4 +1,4 @@
-The main different of chroot from PRoot os that it is native. Unlike PRoot, it does not use ``ptrace()`` for hijacking system call arguments and retrun values to fake the visible file system layout or user/group IDs. It does ot cause for overead and works without issue on any device. However it requires superuser permissions. 
+The main different of chroot from PRoot is that it is native. Unlike PRoot, it does not use ``ptrace()`` for hijacking system call arguments and retrun values to fake the visible file system layout or user/group IDs. It does ot cause for overead and works without issue on any device. However it requires superuser permissions. 
 
 IF you have rooted device and want to have a better experience  with using the Linux distributions in termux, then use ``chroot``. In tis case get started with [Linux Deploy] (https://play.google.com/store/apps/details?id=ru.meefik.linuxdeploy&pli=1) app for automated instaallation. Things like shell can be used from Termux of course.
 
@@ -8,7 +8,7 @@ The main purpose of PRoot is to run the Linux distribution inside Termux without
 
 Simplest way to start a shell in a distribution chroot is:
 ``` 
-uset LD_PRELOAD
+unset LD_PRELOAD
 proot -r ./rootfs -0 -w -b /dev -b /proc -b /sys /bin/sh
 ```
 

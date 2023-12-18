@@ -1,7 +1,7 @@
 Termux is capable of accessing remote devices by using some common tools. It is also possible to turn a device running Termux into a remote controlled server.
 
 # FTP
-*Warning: plain FTP is deprecated and insecure anyway. Termux FTP server supports only anonymous login, there is no authentication and everyone o your network can access files on your device. Use SFTP (OpenSSH) instead!*
+*Warning: plain FTP is deprecated and insecure. Termux FTP server supports only anonymous login, there is no authentication and everyone on your network can access files on your device. Use SFTP (OpenSSH) instead!*
 
 Termux FTP server is based on busybox and service is managed by [Termux-services]. If you decided to use FTP server, install these packages.
 ```
@@ -19,13 +19,13 @@ sv up ftpd
 FTP server will run on port 8021 in read-only mode
 IF you need to stop server, run `sv down ftpd`
 
-## SSH
+# SSH
 SSH provides a secure way for accessing remote hosts ad replaces tools such as telnet, rlogin, rsh, ftp. Termux provides SSH via two packages: *dropbear* and *openssh*. If you never used these tools before, it is reccommend to install `openssh` as it is more common.
 
-**Using the SSH client**
+## Using SSH client
 You can obtain an SSH client by installing either `dropbear` or `openssh`
 	*Usage Example*
-	To login to a remote macine where te ssh daemon is runing at the standard port (22):
+	To login to a remote machine where the ssh daemon is runing at the standard port (22):
 ```
 ssh <user>@<hostname_or_ip>
 ```
@@ -50,15 +50,15 @@ IF you wish to use an SSH agent to avoid entering passwords, the Termux openssh 
 - Runs the `ssh` with the provided arguments.
 This means that the agent will prompt for a key password at first run, but remember the authorization for subsuqeuent runs.
 
-**Using the SSH server**
+## Using SSH server
 
-*OpenSSH*
+### OpenSSH
 
 OpenSSH (also known as OpenBSD Secure Shell) is a suite of secure networking utilities on the Secure Shell (SHH) protocol, which provides a secure channel over an unsecured network in a client-server architecture.
 
 Default SSH port in Termux is 8022.
 
-*Starting and stopping over OpenSSH server*
+#### Starting and stopping over OpenSSH server
 Since Termux does not use initilization system, services are started manually from command line.
 
 To start a Open SSH server, you need to execute this command:
@@ -72,7 +72,7 @@ pkill sshd
 
 SSH deamon does logging to Android system log, you can view it by running `logcat -s 'sshd:*'`. You can do that either from Termux or ADB.
 
-*Setting up password authentication*
+#### Setting up password authentication
 
 Password authentication is enabled by default. This allow you to get started with it much easier. Before proceeding, make sure that you understand that password authentication is less secure than a pubkey-based one.
 
@@ -81,13 +81,13 @@ Password authentication is enabled by default. This allow you to get started wit
 pkg upgrade
 pkg install openssh
 ```
-1. Password authentication is enabled by default in configuration file. But you can still review it (`$PREFIX/etc/ssg/sshd_config`), it should be like this:
+2. Password authentication is enabled by default in configuration file. But you can still review it (`$PREFIX/etc/ssg/sshd_config`), it should be like this:
 ```
 PrintMod yes
 PasswordAuthentication yes
 Subsystem sftp /data/data/com.termux/files/usr/libexec/sftp-server
 ```
-1. Set new password. Execute command `passwd`. While program allows minimal password length of 1 character, the recommended password length is more than 8-10 characters. Passwords are not printed to console.
+3. Set new password. Execute command `passwd`. While program allows minimal password length of 1 character, the recommended password length is more than 8-10 characters. Passwords are not printed to console.
 ```
 $ passwd
 New password:
@@ -95,7 +95,7 @@ Retype new password:
 New password was successfully set.
 ```
 
-*Setting up public key authentication*
+#### Setting up public key authentication
 
 Public key authentication is the recommended way for logging in using SSH. To use this type of authentication, you need to have a public/private key pair. For succesful login te public key must exist in the authroized keys list on remote machine wile private key should be kept safe on your local host.
 
@@ -110,13 +110,13 @@ In the same directory you can find a file `id_rsa.pub` - it is a public key.
 
 *Important Note:* 2048 bit is the minimal key length that is consdiered safe. You can use higher values, but do not use higher than 4096 as remote serever may not support big keys.
 
-1. Copy key to remote machine (Termux). Password authentication has to be enabled in order to install pubkey on remote machine. Now do:
+2. Copy key to remote machine (Termux). Password authentication has to be enabled in order to install pubkey on remote machine. Now do:
 ```
 ssh-cop-id -p 8022 -i id_rsa IP_ADDRESS
 ```
 *DO NOT FORGET TO REPLACE `IP_ADDRESS` with the actual LAN IP address of your device. It can be determined by using command `ifconfig`*.
 
-- Alternative you can manually copy the content of `id_rsa.pub`(public key) which is already on PC and looks like `ssh-rsa <A LOT OF RANDOM STRINGS user@host`  and paste to the Termux file `$HOME/.ssh/authroized_keys` (remote machone). Remember to connect through `ssh user@<Phone_IP> -p 8022` so you can copy the content of the public key using any text editor available on PC and paste inside Termux
+-  Alternative you can manually copy the content of `id_rsa.pub`(public key) which is already on PC and looks like `ssh-rsa <A LOT OF RANDOM STRINGS user@host`  and paste to the Termux file `$HOME/.ssh/authroized_keys` (remote machone). Remember to connect through `ssh user@<Phone_IP> -p 8022` so you can copy the content of the public key using any text editor available on PC and paste inside Termux
   
 If everything was okay, you will see a message like tis one:
 ```
@@ -126,7 +126,7 @@ Now try loggin into the machine with "ssh -p '8022' '192.168.1.4'"
 and check to make sure that only the key(s) you wanted were added.
 ```
 
-1. From this point password authentication can be disabled. Edit file `$PREFIX/etc/ssh/sshd_config` and replace line beginning with “PasswordAuthentication” by
+3. From this point password authentication can be disabled. Edit file `$PREFIX/etc/ssh/sshd_config` and replace line beginning with “PasswordAuthentication” by
 ```
 PasswordAuthentication no
 ```
@@ -141,7 +141,7 @@ Dropbear is a software package written by Matt Johnsdton that provides a Secure 
 
 *Important note:* Dropbear does not provide SFTP server.
 
-*Starting and stopping Dropbear server*
+#### Starting and stopping Dropbear server
 Same as for OpenSSH, you will need to execute it’s binary manually. Also, unlike OpenSSH, Dropbear does not use a configuration file but only command line arguments.
 
 Server is running in background, both password and public key authentication available. To achieve this, just type in console:
@@ -164,7 +164,7 @@ Server started in foreground can be stopped by just Ctrl-C key combination. If i
 pkill dropbear
 ```
 
-*Setting up password authentication*
+#### Setting up password authentication
 
 Same as for OpenSSH, password authentication is enabled by default.
 Everyting you have to do is:
@@ -177,7 +177,7 @@ pkg install dropbear
 1. Set password by executing command `passwd`.
 2. 3. Start dropbear server. You can execute either just `dropbear` to start in background or `dropbear -F` to start in the foreground.
 
-*Setting up public key authentication*
+#### Setting up public key authentication
 
 Same as for OpenSSH, you can out your keys in by using `ssh-copy-id`. But if you cosider to setup a public key authentication from Termux to something else, it is worth to mentiuon some important differences between OpenSSH and Dropbear.
 
@@ -198,8 +198,8 @@ This procedure can be done vice versa to obtain a key in Dropbear’s format:
 dropbearconvert openssh dropbear ./id_rsa_openssh ./id_rsa_dropbear
 ```
 
-**Using the SFTP**
-Package OpenSSH provides a tool for accessing remote hosts over SFTP. This will allow you to work with files in the same way as via FTP but with better security.
+#### Using SFTP
+OpenSSH provides a tool for accessing remote hosts over SFTP. This will allow you to work with files in the same way as via FTP but with better security.
 First install openssh-sftp-server
 ```
 pkg install openssh-sftp-server
@@ -222,11 +222,11 @@ However, to use comand line SFTP client you should know some basic commands:
 - `rm FILE` - Delete file `FILE`
 This is not a complete list of SFTP commands. To view all commands, consider viewing man page (`man sftp`) or view short help interactive SFTP session by issuin command `help`.
 
-#### MOSH
+## MOSH
 
 Mosh is a remote terminal application that allows roaming supports intermittent connectivity, and provides itelligent local echo and lone editing of user keystrokes.
 
-**Using example**
+**Usage example**
 
 *Important note:* Mosh should be installed on both client and server side.
 
@@ -240,29 +240,29 @@ Connecting to Termix (sshd listening on port 8022):
 mosh --ssh="ssh -p 8022" 192.168.1.25
 ```
 
-##### Rsync
-Rsycn is a tool for synchronizing files with remote hosts or local directories (or drives). For better experience of using rsync, make sure that package `openssh` , or `dropbear` is installed.
+## Rsync
+Rsync is a tool to synchronize files with remote hosts or local directories (or drives). For better experience of using rsync, make sure that package `openssh` , or `dropbear` is installed.
 
 **Usage example**
 
-Sync your phots with PC:
+Sync your photos with PC:
 ```
-rsycn -av /sdcard/DCIM/ user@192.168.1.20:~/Pictures/Android/
+rsync -av /sdcard/DCIM/ user@192.168.1.20:~/Pictures/Android/
 ```
 
 Get photos from remote Android device:
 ```
-rsycn -av -e `ssh -p 80221' 192.168.1.3:/sdcard/DCIM /sdcard/DCIM
+rsync -av -e `ssh -p 80221' 192.168.1.3:/sdcard/DCIM /sdcard/DCIM
 ```
 
-Sync locla directories (e.g. from external sdcard to Termux home:)
+Sync local directories (e.g. from external sdcard to Termux home:)
 ```
 rsync -av /storage/0123-4567/myfiles ~/files
 ```
 
-You may want to see man page (`rsync`) to learn more about it’s usage.
+You may want to see manual page of `rsync` command to learn more about its usage.
 
-See Also
+# See also
 [Accessing Termux from the Internet](https://wiki.termux.com/wiki/Bypassing_NAT)
 [Connecting to termux with SSH over USB](https://glow.li/technology/2016/9/20/access-termux-via-usb/)
 

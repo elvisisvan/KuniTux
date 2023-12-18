@@ -2,12 +2,12 @@ This is why Termux does not use official Debian or Ubuntu packages for its envir
 
 Termux doesn’t follow Filesystem Hierarchy standard unlike majority of distros
 
-IF you need a classical Linux file system layout for some reasons you may try to use ``termux-chroot`` from the package ``proot`` 
+IF you need a classical Linux file system layout for some reasons you may try to use `termux-chroot` from the package `proot` 
 
 ```
 > pkg install proot
 > termux-chroot
-> ls 
+> ls / 
 bin doc etc include lib libexec share tmp var
 ```
 
